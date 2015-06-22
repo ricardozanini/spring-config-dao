@@ -60,7 +60,7 @@
 	<logger name="org.jboss" level="${log.sys.level:-INFO}" />
 	<logger name="javax" level="${log.sys.level:-INFO}" />
 	<logger name="com.sun" level="${log.sys.level:-INFO}" />
-	<logger name="br.com.pamcary" level="${log.sys.level:-DEBUG}" />
+	<logger name="br.com.tecnobiz" level="${log.sys.level:-DEBUG}" />
 	<logger name="org.jboss" level="${log.sys.level:-INFO}" />
 
 	<root level="${log.root.level:-DEBUG}">

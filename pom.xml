@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.com.tecnobiz</groupId>
 	<artifactId>spring-config-dao</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<name>spring-config-dao</name>
 	<description>A helper wrapped as a component to facilitate the Data Access Layer of Java Applications based on Spring ORM/JDBC</description>
 
@@ -32,9 +32,9 @@
 
 	<!-- http://maven.apache.org/scm/git.html -->
 	<scm>
-		<url>https://bitbucket.org/ricardozanini/debico</url>
-		<connection>scm:git:ssh://git@bitbucket.org/ricardozanini/debico.git</connection>
-		<developerConnection>scm:git:ssh://git@bitbucket.org/ricardozanini/debico.git</developerConnection>
+		<url>https://github.com/ricardozanini/spring-config-dao</url>
+		<connection>scm:git:ssh://git@github.com:ricardozanini/spring-config-dao.git</connection>
+		<developerConnection>scm:git:ssh:git@github.com:ricardozanini/spring-config-dao.git</developerConnection>
 	</scm>
 
 	<properties>

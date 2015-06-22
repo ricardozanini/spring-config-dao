@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.FlywayException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import br.com.tecnobiz.spring.config.dao.helpers.PropKeys;
-
 import static com.google.common.base.Strings.emptyToNull;
 
 /**
@@ -39,48 +39,56 @@ import static com.google.common.base.Strings.emptyToNull;
  */
 public abstract class AbstractDaoConfig {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(AbstractDaoConfig.class);
+    private static final Logger LOGGER = LoggerFactory
+	    .getLogger(AbstractDaoConfig.class);
 
-	@Inject
-	protected Environment env;
+    @Inject
+    protected Environment env;
 
-	@Inject
-	protected DataSource ds;
+    @Inject
+    protected DataSource ds;
 
-	public void setEnvironment(final Environment environment) {
-		this.env = environment;
+    public void setEnvironment(final Environment environment) {
+	this.env = environment;
+    }
+
+    @Bean(destroyMethod = "close", name = "dataSource")
+    public abstract DataSource dataSource();
+
+    @Bean
+    public abstract PlatformTransactionManager transactionManager();
+
+    /**
+     * @see <a href="http://flywaydb.org/documentation/api/">Flyway API</a>
+     */
+    @Order(0)
+    @Bean(name = "flyway")
+    @DependsOn("dataSource")
+    public Flyway flyway() {
+	final String scripts = env.getProperty(PropKeys.DB_MIG_SCRIPTS);
+	final Flyway flyway = new Flyway();
+
+	if (emptyToNull(scripts) == null) {
+	    LOGGER.info("[flyway] Nao ha scripts para realizar a migracao. Cancelando.");
+	} else {
+	    LOGGER.debug("[flyway] Inicializando o schema do banco de dados.");
+	    flyway.setDataSource(ds);
+	    flyway.setLocations(scripts);
+	    flyway.setBaselineOnMigrate(true);
+	    // flyway.clean();
+	    try {
+		flyway.migrate();
+	    } catch (FlywayException ex) {
+		LOGGER.warn(
+			"[flyway] Problemas com a migracao, tentando o repair",
+			ex);
+		flyway.repair();
+	    }
+
+	    LOGGER.debug("[flyway] Schema do banco de dados inicializado com sucesso.");
 	}
 
-	@Bean(destroyMethod = "close", name = "dataSource")
-	public abstract DataSource dataSource();
-
-	@Bean
-	public abstract PlatformTransactionManager transactionManager();
-
-	/**
-	 * @see <a href="http://flywaydb.org/documentation/api/">Flyway API</a>
-	 */
-	@Order(0)
-	@Bean(name = "flyway")
-	@DependsOn("dataSource")
-	public Flyway flyway() {
-		final String scripts = env.getProperty(PropKeys.DB_MIG_SCRIPTS);
-		final Flyway flyway = new Flyway();
-
-		if (emptyToNull(scripts) == null) {
-			LOGGER.info("[flyway] Nao ha scripts para realizar a migracao. Cancelando.");
-		} else {
-			LOGGER.debug("[flyway] Inicializando o schema do banco de dados.");
-			flyway.setDataSource(ds);
-			flyway.setLocations(scripts);
-			flyway.setBaselineOnMigrate(true);
-			//flyway.clean();
-			flyway.migrate();
-			LOGGER.debug("[flyway] Schema do banco de dados inicializado com sucesso.");
-		}
-
-		return flyway;
-	}
+	return flyway;
+    }
 
 }

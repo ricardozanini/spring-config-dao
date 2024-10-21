@@ -59,7 +59,7 @@
 		<javax.transaction>1.1</javax.transaction>
 
 		<!-- One Library to rule them all -->
-		<spring.version>6.0.16</spring.version>
+		<spring.version>6.1.14</spring.version>
 
 		<!-- Database -->
 		<hibernate-jpa.version>1.0.0.Final</hibernate-jpa.version>
